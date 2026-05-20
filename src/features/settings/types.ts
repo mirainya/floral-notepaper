@@ -24,4 +24,5 @@ export interface AppConfig {
   surfaceWidth?: number;
   surfaceHeight?: number;
   toggleVisibilityShortcut: string;
+  categoryOrder?: string[];
 }

@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/c/Program Files/GitHub CLI/gh.exe pr *)",
+      "Bash(git fetch *)",
+      "Bash(git merge *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(npx tsc *)",
+      "Bash(cargo check *)",
+      "Bash(git stash *)",
+      "Bash(git clean *)",
+      "Bash(git reset *)",
+      "Bash(gh pr *)",
+      "Bash(git rebase *)",
+      "Bash(git commit -m 'feat: 支持 8 方向窗口缩放 *)",
+      "Bash(git branch *)",
+      "Bash(git cherry-pick *)",
+      "Bash(cat .prettierrc)",
+      "Bash(cat .prettierrc.json)",
+      "Bash(cat oxfmt.toml)",
+      "Bash(cat .oxfmt.toml)",
+      "Bash(npx oxfmt *)",
+      "Bash(cargo fmt *)",
+      "Bash(git show *)",
+      "Read(//tmp/**)",
+      "Bash(git apply *)"
+    ]
+  }
+}

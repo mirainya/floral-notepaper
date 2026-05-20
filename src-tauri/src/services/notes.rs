@@ -42,6 +42,8 @@ pub struct AppConfig {
     pub surface_height: Option<u32>,
     #[serde(default = "default_toggle_visibility_shortcut")]
     pub toggle_visibility_shortcut: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub category_order: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -61,6 +63,8 @@ pub struct NoteMetadata {
     pub file_name: String,
     #[serde(default)]
     pub category: String,
+    #[serde(default)]
+    pub pinned: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub word_count: usize,
@@ -75,6 +79,8 @@ pub struct Note {
     pub file_name: String,
     #[serde(default)]
     pub category: String,
+    #[serde(default)]
+    pub pinned: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub word_count: usize,
@@ -224,6 +230,7 @@ impl NoteStore {
             title: metadata.title,
             file_name: metadata.file_name,
             category: metadata.category,
+            pinned: metadata.pinned,
             created_at: metadata.created_at,
             updated_at: metadata.updated_at,
             word_count: metadata.word_count,
@@ -247,6 +254,7 @@ impl NoteStore {
             title: request.title,
             file_name: file_name.clone(),
             category: category.clone(),
+            pinned: false,
             created_at: now,
             updated_at: now,
             word_count,
@@ -263,6 +271,7 @@ impl NoteStore {
             title: metadata.title,
             file_name,
             category,
+            pinned: false,
             created_at: now,
             updated_at: now,
             word_count,
@@ -311,6 +320,7 @@ impl NoteStore {
             title: note.title.clone(),
             file_name: note.file_name.clone(),
             category: new_category,
+            pinned: note.pinned,
             created_at: note.created_at,
             updated_at: note.updated_at,
             word_count: note.word_count,
@@ -485,6 +495,20 @@ impl NoteStore {
         Ok(result)
     }
 
+    pub fn toggle_pin(&self, id: &str) -> Result<NoteMetadata, AppError> {
+        self.ensure_storage()?;
+        let mut metadata_file = self.load_metadata()?;
+        let note = metadata_file
+            .notes
+            .iter_mut()
+            .find(|n| n.id == id)
+            .ok_or_else(|| AppError::not_found(format!("Note {id} was not found")))?;
+        note.pinned = !note.pinned;
+        let result = note.clone();
+        self.save_metadata(&metadata_file)?;
+        Ok(result)
+    }
+
     fn default_config(&self) -> AppConfig {
         AppConfig {
             notes_dir: self.base_dir.join("notes").to_string_lossy().to_string(),
@@ -509,6 +533,7 @@ impl NoteStore {
             surface_width: None,
             surface_height: None,
             toggle_visibility_shortcut: default_toggle_visibility_shortcut(),
+            category_order: Vec::new(),
         }
     }
 
@@ -638,6 +663,7 @@ impl NoteStore {
                 title,
                 file_name,
                 category: category.to_string(),
+                pinned: false,
                 created_at: modified,
                 updated_at: modified,
                 word_count: count_words(&content),
