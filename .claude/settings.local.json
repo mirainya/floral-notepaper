@@ -24,7 +24,8 @@
       "Bash(cargo fmt *)",
       "Bash(git show *)",
       "Read(//tmp/**)",
-      "Bash(git apply *)"
+      "Bash(git apply *)",
+      "Bash(python3 -c *)"
     ]
   }
 }
