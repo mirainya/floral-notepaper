@@ -2345,9 +2345,13 @@ export function MainWindow({
                           viewMode === "preview" ? "pt-3" : "pt-1"
                         }`}
                       >
-                        <MarkdownPreview
+                        <MilkdownPreview
                           content={content}
                           fontSize={settingsConfig?.fontSize ?? 14}
+                          onChange={(md) => {
+                            setContent(md);
+                            markDirty();
+                          }}
                         />
                       </div>
                     </div>

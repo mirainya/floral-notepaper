@@ -1,7 +1,7 @@
 import chroma from "chroma-js";
-import type { CSSProperties, HTMLAttributes } from "react";
+import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
 import { DEFAULT_TILE_COLOR, normalizeTileColor } from "../features/settings/tileColor";
-import { MarkdownPreview } from "../features/markdown/MarkdownPreview";
+import { MilkdownPreview } from "../features/editor/MilkdownPreview";
 
 export interface TileProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
@@ -9,6 +9,7 @@ export interface TileProps extends Omit<
 > {
   title?: string;
   content: string;
+  richContent?: ReactNode;
   color?: string;
   width?: number | string;
   rotation?: number;
@@ -68,6 +69,7 @@ function CornerMarks({ color }: { color: string }) {
 export function Tile({
   title,
   content,
+  richContent,
   color = DEFAULT_TILE_COLOR,
   width = 260,
   rotation = 0,
@@ -113,14 +115,14 @@ export function Tile({
         {content ? (
           renderMarkdown ? (
             <div style={{ color: contentColor }}>
-              <MarkdownPreview content={content} fontSize={fontSize} />
+              <MilkdownPreview content={content} fontSize={fontSize} readonly />
             </div>
           ) : (
             <div
-              className="leading-[1.8] whitespace-pre-wrap font-body"
+              className="leading-[1.8] font-body"
               style={{ color: contentColor, fontSize: `${fontSize}px` }}
             >
-              {content}
+              {richContent ?? <span className="whitespace-pre-wrap">{content}</span>}
             </div>
           )
         ) : (
