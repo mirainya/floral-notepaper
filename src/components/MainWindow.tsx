@@ -46,7 +46,7 @@ import {
   noteContextMenuItems,
   type NoteContextMenuAction,
 } from "../features/notes/noteContextMenu";
-import { openNotepadWindow, openTileWindow } from "../features/windows/api";
+import { openNotepadWindow } from "../features/windows/api";
 import {
   closeCurrentWindow,
   minimizeCurrentWindow,
@@ -1253,7 +1253,7 @@ export function MainWindow({
 
     setErrorMessage(null);
     try {
-      await openTileWindow(selectedId);
+      await openNotepadWindow(selectedId, undefined, "tile");
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     }

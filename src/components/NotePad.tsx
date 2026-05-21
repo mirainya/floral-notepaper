@@ -144,6 +144,7 @@ export function NotePad({
   const [tileColorRaw, setTileColorRaw] = useState(normalizeTileColor(initialTileColor));
   const [tileColorMode, setTileColorMode] = useState<TileColorMode>("system");
   const [surfaceFontSize, setSurfaceFontSize] = useState(14);
+  const [tileRenderMarkdown, setTileRenderMarkdown] = useState(false);
   const [tileColor, setTileColor] = useState(() =>
     resolveTileColor("system", normalizeTileColor(initialTileColor)),
   );
@@ -178,6 +179,7 @@ export function NotePad({
         if (!cancelled) {
           setNoteSurfaceAutoSave(loadedConfig.noteSurfaceAutoSave);
           setSurfaceFontSize(loadedConfig.surfaceFontSize ?? 14);
+          setTileRenderMarkdown(loadedConfig.tileRenderMarkdown ?? false);
           setTileColorRaw(normalizeTileColor(loadedConfig.tileColor));
           setTileColorMode(loadedConfig.tileColorMode ?? "system");
           setTileColor(
@@ -231,6 +233,7 @@ export function NotePad({
       tileColor?: string;
       tileColorMode?: TileColorMode;
       surfaceFontSize?: number;
+      tileRenderMarkdown?: boolean;
     }>("config-changed", (event) => {
       const mode = event.payload.tileColorMode ?? tileColorMode;
       const raw = event.payload.tileColor ?? tileColorRaw;
@@ -238,6 +241,7 @@ export function NotePad({
       setTileColorRaw(normalizeTileColor(raw));
       setTileColor(resolveTileColor(mode, raw));
       if (event.payload.surfaceFontSize != null) setSurfaceFontSize(event.payload.surfaceFontSize);
+      if (event.payload.tileRenderMarkdown != null) setTileRenderMarkdown(event.payload.tileRenderMarkdown);
     });
     return () => {
       void unlisten.then((fn) => fn());
@@ -500,11 +504,7 @@ export function NotePad({
         <Tile
           title={tileTitle || undefined}
           content={errorMessage || content}
-          richContent={
-            !errorMessage && content ? (
-              <MilkdownPreview content={content} fontSize={surfaceFontSize} readonly />
-            ) : undefined
-          }
+          renderMarkdown={tileRenderMarkdown}
           color={tileColor}
           fontSize={surfaceFontSize}
           width="100%"
@@ -520,7 +520,7 @@ export function NotePad({
         <div className={padSurfaceClassName} data-surface-mode={surfaceMode}>
           <>
             <div
-              className="flex items-center justify-between px-1.5 pt-1.5 pb-0 cursor-default gap-1"
+              className="flex items-center justify-between px-1.5 pt-1 pb-0 cursor-default gap-1"
               onMouseDown={handleDrag}
             >
               <div className="flex items-center gap-0 min-w-0 flex-1 overflow-x-auto scrollbar-none">

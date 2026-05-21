@@ -3,6 +3,7 @@ export type AppView = "main" | "notepad" | "tile";
 export interface AppRoute {
   view: AppView;
   noteId?: string;
+  mode?: string;
 }
 
 export function getInitialRoute(url: URL = new URL(window.location.href)): AppRoute {
@@ -13,9 +14,10 @@ export function routeFromSearch(search: string): AppRoute {
   const params = new URLSearchParams(search);
   const view = params.get("view");
   const noteId = params.get("noteId") ?? undefined;
+  const mode = params.get("mode") ?? undefined;
 
-  if (view === "notepad") return noteId ? { view, noteId } : { view };
-  if (view === "tile") return noteId ? { view, noteId } : { view };
+  if (view === "notepad") return { view, noteId, mode };
+  if (view === "tile") return { view, noteId, mode };
   return { view: "main" };
 }
 

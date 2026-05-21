@@ -454,8 +454,9 @@ pub async fn open_notepad_window(
     app: AppHandle,
     note_id: Option<String>,
     bounds: Option<WindowBounds>,
+    mode: Option<String>,
 ) -> Result<String, AppError> {
-    open_notepad_window_now(&app, note_id.as_deref(), bounds)
+    open_notepad_window_now(&app, note_id.as_deref(), bounds, mode.as_deref())
 }
 
 pub async fn open_tile_window(
@@ -610,7 +611,7 @@ fn handle_tray_menu_event(app: &AppHandle, id: &str) -> Result<(), Box<dyn Error
     match tray_menu_action(id) {
         Some(TrayMenuAction::ShowMain) => show_main_window(app)?,
         Some(TrayMenuAction::QuickNote) => {
-            open_notepad_window_now(app, None, None)?;
+            open_notepad_window_now(app, None, None, None)?;
         }
         Some(TrayMenuAction::ToggleCloseToTray) => {
             let store = default_store()?;
@@ -665,6 +666,7 @@ fn open_notepad_window_now(
     app: &AppHandle,
     note_id: Option<&str>,
     bounds: Option<WindowBounds>,
+    mode: Option<&str>,
 ) -> Result<String, AppError> {
     if note_id.is_none() {
         if let Some(reused) = activate_pooled_notepad(app, bounds) {
@@ -675,10 +677,13 @@ fn open_notepad_window_now(
 
     let label = notepad_window_label(note_id);
     let specs = saved_surface_specs(app);
-    let url = match note_id {
+    let mut url = match note_id {
         Some(id) => format!("index.html?view=notepad&noteId={id}"),
         None => "index.html?view=notepad".to_string(),
     };
+    if let Some(m) = mode {
+        url.push_str(&format!("&mode={m}"));
+    }
 
     open_or_focus_window(
         app,
@@ -1081,7 +1086,7 @@ fn setup_global_shortcut_plugin(app: &AppHandle) -> tauri::Result<()> {
                         let bounds = cursor_centered_bounds(&specs);
                         if let Err(error) = app.run_on_main_thread(move || {
                             if let Err(error) =
-                                open_notepad_window_now(&app_for_closure, None, bounds)
+                                open_notepad_window_now(&app_for_closure, None, bounds, None)
                             {
                                 eprintln!("failed to open notepad from global shortcut: {error}");
                             }

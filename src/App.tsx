@@ -53,7 +53,7 @@ function App() {
         {activeView === "main" ? (
           <MainWindow />
         ) : activeView === "notepad" ? (
-          <NotePad initialNoteId={route.noteId} />
+          <NotePad initialNoteId={route.noteId} initialSurfaceMode={route.mode === "tile" ? "tile" : "pad"} />
         ) : (
           <TileShowcase noteId={route.noteId} />
         )}

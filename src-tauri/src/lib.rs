@@ -163,8 +163,9 @@ async fn open_notepad_window(
     app: AppHandle,
     note_id: Option<String>,
     bounds: Option<desktop::WindowBounds>,
+    mode: Option<String>,
 ) -> Result<String, AppError> {
-    desktop::open_notepad_window(app, note_id, bounds).await
+    desktop::open_notepad_window(app, note_id, bounds, mode).await
 }
 
 #[tauri::command]
