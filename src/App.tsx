@@ -27,12 +27,15 @@ function App() {
   }, []);
 
   useEffect(() => {
+    let themeCleanup = () => {};
     const unlisten = listen<AppConfig>("config-changed", (event) => {
       const theme = (event.payload.theme || "system") as ThemeOption;
       applyTheme(theme);
-      watchSystemTheme(theme);
+      themeCleanup();
+      themeCleanup = watchSystemTheme(theme);
     });
     return () => {
+      themeCleanup();
       void unlisten.then((fn) => fn());
     };
   }, []);
