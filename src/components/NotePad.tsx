@@ -149,6 +149,7 @@ export function NotePad({
     resolveTileColor("system", normalizeTileColor(initialTileColor)),
   );
   const [isExiting, setIsExiting] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const isStandby = useRef(
     typeof window !== "undefined" &&
@@ -641,11 +642,18 @@ export function NotePad({
                 className="px-3 pt-2 pb-1 flex flex-col flex-1 min-h-0"
               >
                 <input
+                  ref={titleRef}
                   type="text"
                   value={title}
                   onChange={(event) => {
                     setTitle(event.target.value);
                     setStatus("未保存");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === "ArrowDown") {
+                      event.preventDefault();
+                      contentRef.current?.focus();
+                    }
                   }}
                   placeholder="标题（可选）"
                   className="w-full font-display font-medium text-ink placeholder:text-ink-ghost/60 mb-1 tracking-wide shrink-0"
@@ -658,6 +666,18 @@ export function NotePad({
                   onChange={(event) => {
                     setContent(event.target.value);
                     setStatus("未保存");
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "ArrowUp") {
+                      const ta = contentRef.current;
+                      if (ta && ta.selectionStart === ta.selectionEnd) {
+                        const textBeforeCursor = content.slice(0, ta.selectionStart);
+                        if (!textBeforeCursor.includes("\n")) {
+                          event.preventDefault();
+                          titleRef.current?.focus();
+                        }
+                      }
+                    }
                   }}
                   placeholder="写点什么……"
                   className="w-full flex-1 min-h-0 pb-2 leading-relaxed text-ink-soft font-body placeholder:text-ink-ghost/50"
