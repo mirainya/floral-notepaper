@@ -2261,7 +2261,6 @@ export function MainWindow({
                             setContent(event.target.value);
                             markDirty();
                           }}
-<<<<<<< HEAD
                           onKeyDown={(e) => {
                             if ((e.ctrlKey || e.metaKey) && e.key === "z") {
                               e.preventDefault();
