@@ -47,6 +47,16 @@ describe("MainWindow settings", () => {
     expect(markup).toContain('d="M12 3v12"');
     expect(markup).toContain('d="m7 10 5 5 5-5"');
     expect(markup).toContain('d="M5 21h14"');
+    expect(markup).not.toContain('d="m7 14 5-5 5 5"');
+    expect(markup).not.toContain('d="m7 8 5-5 5 5"');
+  });
+
+  test("uses the body font for the main Markdown editor text", () => {
+    const markup = renderToStaticMarkup(<MainWindow />);
+    const editorMatch = markup.match(/<textarea[^>]*>/);
+
+    expect(editorMatch?.[0]).toContain("font-body");
+    expect(editorMatch?.[0]).not.toContain("font-mono");
   });
 });
 
