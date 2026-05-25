@@ -21,6 +21,7 @@ describe("window api", () => {
     expect(invoke).toHaveBeenNthCalledWith(2, "open_notepad_window", {
       noteId: "note-1",
       bounds,
+      mode: null,
     });
   });
 });
