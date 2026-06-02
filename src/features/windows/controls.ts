@@ -45,6 +45,10 @@ export function isCurrentWindowMaximized(): Promise<boolean> {
   return getCurrentWindow().isMaximized();
 }
 
+export function onCurrentWindowResized(handler: () => void): Promise<() => void> {
+  return getCurrentWindow().onResized(() => handler());
+}
+
 export function setCurrentWindowAlwaysOnTop(enabled: boolean): Promise<void> {
   return getCurrentWindow().setAlwaysOnTop(enabled);
 }
