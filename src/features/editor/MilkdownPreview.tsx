@@ -23,6 +23,7 @@ export function MilkdownPreview({
   const crepeRef = useRef<Crepe | null>(null);
   const readyRef = useRef(false);
   const suppressRef = useRef(false);
+  const lastEmittedRef = useRef<string | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
@@ -54,6 +55,7 @@ export function MilkdownPreview({
       listener.markdownUpdated((_ctx, markdown, prevMarkdown) => {
         if (markdown === prevMarkdown) return;
         if (suppressRef.current) return;
+        lastEmittedRef.current = markdown;
         onChangeRef.current?.(markdown);
       });
     });
@@ -86,7 +88,7 @@ export function MilkdownPreview({
         crepeRef.current = null;
       }
     };
-  // eslint-disable-next-line -- only run on mount
+    // eslint-disable-next-line -- only run on mount
   }, []);
 
   useEffect(() => {
@@ -96,6 +98,8 @@ export function MilkdownPreview({
 
   useEffect(() => {
     if (!readyRef.current || !crepeRef.current) return;
+    // 内容由本组件自身输入触发时跳过重建，避免 replaceAll 把光标重置到末尾
+    if (content === lastEmittedRef.current) return;
     const current = crepeRef.current.getMarkdown();
     if (current === content) return;
     try {
