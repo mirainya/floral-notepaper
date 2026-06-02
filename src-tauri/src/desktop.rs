@@ -1135,7 +1135,14 @@ fn parse_configured_shortcut(field: &str, value: &str) -> Result<Shortcut, Box<d
 
 #[cfg(desktop)]
 fn shortcut_bindings_from_config(config: &AppConfig) -> Result<ShortcutBindings, Box<dyn Error>> {
-    let open_notepad = parse_configured_shortcut("global", &config.global_shortcut)?;
+    let open_notepad = if config.global_shortcut.is_empty() {
+        None
+    } else {
+        Some(parse_configured_shortcut(
+            "global",
+            &config.global_shortcut,
+        )?)
+    };
     let toggle_visibility = if config.toggle_visibility_shortcut.is_empty() {
         None
     } else {
@@ -1145,18 +1152,17 @@ fn shortcut_bindings_from_config(config: &AppConfig) -> Result<ShortcutBindings,
         )?)
     };
 
-    if toggle_visibility
-        .as_ref()
-        .is_some_and(|shortcut| shortcut == &open_notepad)
-    {
-        return Err(Box::new(AppError {
-            code: "duplicateShortcut".into(),
-            message: "visibility toggle shortcut must differ from global shortcut".into(),
-        }));
+    if let (Some(open), Some(toggle)) = (&open_notepad, &toggle_visibility) {
+        if open == toggle {
+            return Err(Box::new(AppError {
+                code: "duplicateShortcut".into(),
+                message: "visibility toggle shortcut must differ from global shortcut".into(),
+            }));
+        }
     }
 
     Ok(ShortcutBindings {
-        open_notepad: Some(open_notepad),
+        open_notepad,
         toggle_visibility,
     })
 }
